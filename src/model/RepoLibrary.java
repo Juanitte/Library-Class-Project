@@ -1,7 +1,6 @@
 package model;
-
-
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import interfaces.iRepo;
 import model.DTO.BookCopy;
@@ -12,177 +11,225 @@ import util.Utils;
 
 public class RepoLibrary implements iRepo, Serializable{
 	
-	private Item[] items;
-	private User[] users;
+	private ArrayList<Item> items;
+	private ArrayList<User> users;
 	
 	
 	public RepoLibrary() {
-		this.items  = new Item[200];
-		this.users = new User[0];
+		this.items  = new ArrayList<Item>();
+		this.users = new ArrayList<User>();
 	}
 	
-	public RepoLibrary(Item[] items, User[] users) {
+	public RepoLibrary(ArrayList<Item> items, ArrayList<User> users) {
 		super();
 		this.items = items;
 		this.users = users;
-	}
+	}		
 
-	public Item[] getItems() {
+	public ArrayList<Item> getItems() {
 		return items;
 	}
 
-	public void setItems(Item[] items) {
+	public void setItems(ArrayList<Item> items) {
 		this.items = items;
 	}
 
-	public User[] getUsers() {
+	public ArrayList<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(User[] users) {
+	public void setUsers(ArrayList<User> users) {
 		this.users = users;
-	}	
+	}
 
+	/**
+	 * Method that adds an item (BookCopy or Magazine) to the list.
+	 * @param item , BookCopy or Magazine to add.
+	 * @return boolean checking whether it's done or not.
+	 */
+	
 	@Override
 	public boolean itemAdd(Item item) {
 		boolean isDone = false;
-		
-		for(int i = 0; i < items.length && !isDone; i++) {
-			if(items[i] == null) {
-				items[i] = item;
-				isDone = true;
-			}
-		}
-		
-		if(!isDone) {
+				
+		if(items.size() > 200) {
 			Utils.showMessage("There's no room for more items");
+		}else {
+			isDone = true;
+			items.add(item);
 		}
 		
 		return isDone;
 	}
 	
-	@Override
-	public int itemSearchByCode(int code) {
-		boolean isDone = false;
-		int pos = -1;
-		
-		for(int i = 0; i < items.length && !isDone; i++) {
-			if(items[i] != null) {
-				if(items[i].getCode() == code) {
-					isDone = true;
-					pos = i;
-				}
-			}else {
-				isDone = true;
-			}
-		}
-		
-		return pos;
-	}
+	/**
+	 * Method that searchs for an item given a code.
+	 * @param code , the code to look for.
+	 * @return the item or null if it doesn't exists.
+	 */
 	
 	@Override
-	public int itemSearchByTitle(String title) {
-		boolean isDone = false;
-		int pos = -1;
+	public Item itemSearchByCode(int code) {
 		
-		for(int i = 0; i < items.length && !isDone; i++) {
-			if(items[i] != null) {
-				if(items[i].getTitle().contentEquals(title)) {
-					isDone = true;
-					pos = i;
-				}
-			}else {
-				isDone = true;
+		for(Item i : items) {
+			if(i.getCode() == code) {
+				return i;
 			}
 		}
-		
-		return pos;
+		return null;		
 	}
+	
+	/**
+	 * Method that searchs for an item given a title.
+	 * @param title , the title to look for.
+	 * @return the item or null if it doesn't exists.
+	 */
+	
+	@Override
+	public Item itemSearchByTitle(String title) {
+		
+		for(Item i : items) {
+			if(i.getTitle().contentEquals(title)) {
+				return i;
+			}
+		}
+		return null;		
+	}
+	
+	/**
+	 * Method that checks if the given item is duplicate or not.
+	 * @param item , the item to check.
+	 * @return a boolean true if it's duplicated or false if it's not.
+	 */
 	
 	@Override
 	public boolean itemIsDuplicate(Item item) {
-		boolean isDuplicate = false;
 		
-		for(int i = 0; i < items.length && !isDuplicate; i++) {
-			if(items[i] != null) {
-				isDuplicate = items[i].equals(item);
+		for(Item i : items) {
+			if(i.equals(item)) {
+				return true;
 			}
 		}
-		
-		return isDuplicate;
+		return false;
 	}
 	
+	/**
+	 * Method that shows a given item.
+	 * @param item , the item to show.
+	 */
+	
 	@Override
-	public boolean itemShow(int pos) {
-		boolean isDone = false;
+	public void itemShow(Item item) {
 		
 			Utils.showMessage("");
-			Utils.showMessage(items[pos].toString());
+			Utils.showMessage(item.toString());
 			Utils.showMessage("");
-			isDone = true;
-		
-		return isDone;
 	}
+	
+	/**
+	 * Method that shows every item in the library.
+	 */
 	
 	@Override
 	public void libraryShow() {
-		boolean isDone = false;
 		
 		Utils.showMessage("");
 		
-		for(int i = 0; i < items.length && !isDone; i++) {
-			if(items[i] != null) {
-				Utils.showMessage(items[i].toString());
-				Utils.showMessage("");
+		for(Item i : items) {
+			if(!i.isBook(i)) {
+				Utils.showMessage(((Magazine) i).toString());
 			}else {
-				isDone = true;
+				Utils.showMessage(((BookCopy) i).toString());
 			}
+			Utils.showMessage("");
 		}
-		
-		Utils.showMessage("");
 		
 	}
 	
+	/**
+	 * Method that checks the position of an item in a list.
+	 * @param item , the item to find.
+	 * @return the item's position in the list.
+	 */
+	
 	@Override
-	public boolean isBook(int pos) {
-		boolean isBook = false;
+	public int getItemPos(Item item) {
+		int pos = 0;
+		boolean isDone = false;
 		
-		if(pos != -1) {
-			if(items[pos].getClass().getTypeName().contains("BookCopy")) {
-				isBook = true;
+		for(Item i : items) {
+			if(i == item) {
+				isDone = true;
+			}
+			if(!isDone) {
+				pos++;
 			}
 		}
 		
-		return isBook;
-		
+		return pos;
 	}
+	
+	/**
+	 * Method that checks the position of an item in a list.
+	 * @param item , the item to find.
+	 * @return the item's position in the list.
+	 */
+	
+	@Override
+	public int getUserPos(User user) {
+		int pos = 0;
+		boolean isDone = false;
+		
+		for(User i : users) {
+			if(i == user) {
+				isDone = true;
+			}
+			if(!isDone) {
+				pos++;
+			}
+		}
+		
+		return pos;
+	}
+	
+	
+	/**
+	 * Method that modifies a BookCopy.
+	 * @param book , the book to modify.
+	 * @return a boolean that checks if it's done or not.
+	 */
 	
 	@Override
 	public boolean bookModify(BookCopy book, int pos) {
 		boolean isDone = false;
 		
-		String title = Utils.stringInput("New Title: ");
-		int releaseYear = Utils.intInput("New Release Year: ");
-		String isbn = Utils.stringInput("New ISBN: ");
-		int bookshelvesNum = Utils.intInput("New Bookshelves Number: ");
+		if(!book.isTaken()) {
+			String title = Utils.stringInput("New Title: ");
+			int releaseYear = Utils.intInput("New Release Year: ");
+			String isbn = Utils.stringInput("New ISBN: ");
+			int bookshelvesNum = Utils.intInput("New Bookshelves Number: ");
+			
+			BookCopy newBook = new BookCopy(title, releaseYear, isbn, bookshelvesNum);
+			
+			items.set(pos, newBook);
+			isDone = true;
+	
+			Utils.showMessage("");
+			Utils.showMessage("Book modified succesfully");
+			Utils.showMessage("");
 		
-		book.setTitle(title);
-		book.setReleaseYear(releaseYear);
-		book.setIsbn(isbn);
-		book.setBookshelvesNum(bookshelvesNum);
-		if(book.isTaken()) {
-			String takenDate = Utils.stringInput("New Taken Date: ");
-			book.setTakenDate(takenDate);
+		}else {
+			Utils.showMessage("That book's lent");
 		}
-		
-		items[pos] = book;
-
-		Utils.showMessage("");
-		Utils.showMessage("Book modified succesfully");
-		Utils.showMessage("");
 		
 		return isDone;
 	}
+	
+	/**
+	 * Method that modifies a Magazine.
+	 * @param magazine , the magazine to modify.
+	 * @return a boolean that checks if it's done or not.
+	 */
 	
 	@Override
 	public boolean magazineModify(Magazine magazine, int pos) {
@@ -191,227 +238,150 @@ public class RepoLibrary implements iRepo, Serializable{
 		String title = Utils.stringInput("New Title: ");
 		String edition = Utils.stringInput("New Edition: ");
 		
-		magazine.setTitle(title);
-		magazine.setEdition(edition);
+		Magazine newMagazine = new Magazine(title, edition);
 		
-		items[pos] = magazine;
+		items.set(pos, newMagazine);
 		
 		Utils.showMessage("");
 		Utils.showMessage("Magazine modified succesfully");
 		Utils.showMessage("");
-		
-		return isDone;
-	}
-	
-	@Override
-	public boolean itemDelete(int pos) {
-		boolean isDone = false;
-		
-		items[pos] = null;
-		this.itemOrganize(pos);
 		isDone = true;
 		
 		return isDone;
-		
 	}
 	
-	@Override
-	public boolean itemOrganize(int pos) {
-		boolean isDone = false;
-		
-		if(pos != 0) {
-			for(int i = pos + 1; i < items.length && !isDone; i++) {
-				if(items[i] == null) {
-					items[pos] = items[i - 1];
-					items[i - 1] = null;
-					isDone = true;
-				}else if(i == items.length - 1) {
-					items[pos] = items[items.length - 1];
-					items[items.length - 1] = null;
-					isDone = true;
-				}
-			}
-		}else {
-			isDone = true;
-		}
-		
-		return isDone;
-	}
+	/**
+	 * Method that searchs for an user in the list.
+	 * @param dni , the dni to look for.
+	 * @return the user or null if it's not there.
+	 */
 	
 	@Override
-	public boolean userAdd(User user) {
-		boolean isDone = false;
+	public User userSearch(String dni) {
 		
-		users = usersEnlarger();
-		
-		users[users.length - 1] = user;
-		isDone = true;
-		
-		return isDone;
-		
-	}
-	
-	@Override
-	public User[] usersEnlarger() {
-		User[] newUsers = new User[this.users.length + 1];
-		
-		for(int i = 0; i < users.length; i++) {
-			newUsers[i] = users[i];
-		}
-		
-		return newUsers;
-	}
-	
-	@Override
-	public int userSearch(String dni) {
-		boolean isDone = false;
-		int pos = -1;
-		
-		for(int i = 0; i < users.length && !isDone; i++) {
-			if(users[i] != null) {
-				if(users[i].getDni().contentEquals(dni)) {
-					isDone = true;
-					pos = i;
-				}
-			}else {
-				isDone = true;
+		for(User i : users) {
+			if(i.getDni().contentEquals(dni)) {
+				return i;
 			}
 		}
 		
-		return pos;
+		return null;
 	}
 	
+	/**
+	 * Method that shows a given user.
+	 * @param user , the user to show.
+	 */
+	
 	@Override
-	public boolean userShow(int pos) {
-		boolean isDone = false;
-			Utils.showMessage("");
-			Utils.showMessage(users[pos].toString());
-			Utils.showMessage("");
-			isDone = true;
+	public void userShow(User user) {
 		
-		return isDone;
-		
+			Utils.showMessage("");
+			Utils.showMessage(user.toString());
+			Utils.showMessage("");
 	}
+	
+	/**
+	 * Method that checks if the given user is duplicate or not.
+	 * @param user , the user to check.
+	 * @return a boolean true if it's duplicated or false if it's not.
+	 */
 	
 	@Override
 	public boolean userIsDuplicate(User user) {
-		boolean isDuplicate = false;
 		
-		for(int i = 0; i < users.length && !isDuplicate; i++) {
-			if(users[i] != null) {
-				isDuplicate = users[i].equals(user);
+		for(User i : users) {
+			if(i.equals(user)) {
+				return true;
 			}
 		}
-		
-		return isDuplicate;
+		return false;
 	}
+	
+	/**
+	 * Method that shows every user in the library.
+	 */
 	
 	@Override
 	public void userShowAll() {
-		boolean isDone = false;
 		
 		Utils.showMessage("");
 		
-		for(int i = 0; i < users.length && !isDone; i++) {
-			if(users[i] != null) {
-				Utils.showMessage(users[i].toString());
-				Utils.showMessage("");
-			}else {
-				isDone = true;
-			}
+		for(User i : users) {
+			Utils.showMessage(i.toString());
+			Utils.showMessage("");
 		}
-		
-		Utils.showMessage("");
 		
 	}
 	
+	/**
+	 * Method that modifies a BookCopy.
+	 * @param book , the book to modify.
+	 * @return a boolean that checks if it's done or not.
+	 */
+	
 	@Override
-	public boolean userModify(int pos, User user) {
+	public boolean userModify(User user, int pos) {
 		boolean isDone = false;
-		
+
 		String dni = Utils.stringInput("New DNI: ");
 		String name = Utils.stringInput("New Name: ");
 		String surname = Utils.stringInput("New Surname: ");
 		String phoneNum = Utils.stringInput("New Phone Number: ");
 		String email = Utils.stringInput("New Email: ");
-		
-		user.setDni(dni);
-		user.setName(name);
-		user.setSurname(surname);
-		user.setPhoneNum(phoneNum);
-		user.setEmail(email);
-		
-		users[pos] = user;
-
-		Utils.showMessage("");
-		Utils.showMessage("User modified succesfully");
-		Utils.showMessage("");
+			
+		User newUser = new User(dni, name, surname, phoneNum, email);
+			
+		users.set(pos, newUser);
 		isDone = true;
+	
+		Utils.showMessage("");
+		Utils.showMessage("Book modified succesfully");
+		Utils.showMessage("");
 		
 		return isDone;
-		
 	}
 	
-	@Override
-	public boolean userDelete(int pos) {
-		boolean isDone = false;
-		
-		users[pos] = null;
-		this.userOrganize(pos);
-		isDone = true;
-		
-		return isDone;
-		
-	}
+	/**
+	 * Method that lends a book to an user.
+	 * @param user , the selected user , book , the selected book.
+	 */
 
 	@Override
-	public boolean userOrganize(int pos) {
-		boolean isDone = false;
-		User[] newUsers = new User[users.length -1];
+	public void lendBook(User user, BookCopy book) {
+		user.setLentBook(book);
 		
-		if(users.length -1 != 0) {
-			users[pos] = users[users.length - 1];
-			users[users.length - 1] = null;
-			for(int i = 0; i < newUsers.length; i++) {
-				if(users[i] != null) {
-					newUsers[i] = users[i];
-				}
-			}
-			isDone = true;
-		}else {
-			users = newUsers;
-			isDone = true;
-		}
-		
-		return isDone;
+		book.setTaken(true);
+		book.setTakenDate(Utils.stringInput("Current date: "));
+		book.setHolder(user);
 	}
+	
+	/**
+	 * Method that retrieves a book from an user.
+	 * @param 
+	 */
 
 	@Override
-	public boolean lendBook(int userPos, int bookPos) {
-		users[userPos].setLentBook((BookCopy) items[bookPos]);
-		
-		((BookCopy) items[bookPos]).setTaken(true);
-		((BookCopy) items[bookPos]).setTakenDate(Utils.stringInput("Current date: "));
-		((BookCopy) items[bookPos]).setHolder(users[userPos]);
+	public boolean retrieveBook(User user, BookCopy book) {
+		user.setLentBook(null);
+		book.setHolder(null);
+		book.setTaken(false);
+		book.setTakenDate(null);
 		
 		return true;
 	}
+	
+	/**
+	 * Method that checks if an user has a lent book already.
+	 * @param user , the user to be checked.
+	 * @return a boolean checking if the user has a lent book or not.
+	 */
 
 	@Override
-	public boolean retrieveBook(int userPos, int bookPos) {
-		users[userPos].setLentBook(null);
-		((BookCopy) items[bookPos]).setHolder(null);
-		((BookCopy) items[bookPos]).setTaken(false);
-		((BookCopy) items[bookPos]).setTakenDate(null);
-		
-		return true;
-	}
-
-	@Override
-	public boolean checkUser(int userPos) {
+	public boolean checkUser(User user) {
 		boolean isLent = false;
 		
-		if(users[userPos].getLentBook() != null) {
+		if(user.getLentBook() != null) {
 			isLent = true;
 		}
 		
@@ -419,10 +389,10 @@ public class RepoLibrary implements iRepo, Serializable{
 	}
 
 	@Override
-	public boolean checkBook(int bookPos) {
+	public boolean checkBook(BookCopy book) {
 		boolean isLent = false;
 		
-		if(((BookCopy) items[bookPos]).getHolder() != null) {
+		if(book.getHolder() != null) {
 			isLent = true;
 		}
 		

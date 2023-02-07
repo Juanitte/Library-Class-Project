@@ -1,53 +1,48 @@
 package interfaces;
 
+import java.util.ArrayList;
+
 import model.DTO.BookCopy;
 import model.DTO.Item;
 import model.DTO.Magazine;
 import model.DTO.User;
 
 public interface iRepo{
-	Item[] getItems();
-	User[] getUsers();
-	void setItems(Item[] items);
-	void setUsers(User[] users);
+	ArrayList<Item> getItems();
+	ArrayList<User> getUsers();
+	void setItems(ArrayList<Item> items);
+	void setUsers(ArrayList<User> users);
 	
 	boolean itemAdd(Item item);
 	
-	int itemSearchByCode(int code);
-	int itemSearchByTitle(String title);
+	Item itemSearchByCode(int code);
+	Item itemSearchByTitle(String title);
 	
 	boolean itemIsDuplicate(Item item);
 	
-	boolean itemShow(int pos);
+	void itemShow(Item item);
 	void libraryShow();
 	
-	boolean isBook(int pos);
+	int getItemPos(Item item);
+	int getUserPos(User user);
+	
 	boolean bookModify(BookCopy book, int pos);
 	boolean magazineModify(Magazine magazine, int pos);
 	
-	boolean itemDelete(int pos);
-	boolean itemOrganize(int pos);
 	
-	
-	boolean userAdd(User user);
-	User[] usersEnlarger();
-	
-	int userSearch(String dni);
+	User userSearch(String dni);
 	
 	boolean userIsDuplicate(User user);
 	
-	boolean userShow(int pos);
+	void userShow(User user);
 	void userShowAll();
 	
-	boolean userModify(int pos, User user);
+	boolean userModify(User user, int pos);
 	
-	boolean userDelete(int pos);
-	boolean userOrganize(int pos);
+	void lendBook(User user, BookCopy book);
 	
-	boolean lendBook(int userPos, int bookPos);
+	boolean retrieveBook(User user, BookCopy book);
 	
-	boolean retrieveBook(int userPos, int bookPos);
-	
-	boolean checkUser(int userPos);
-	boolean checkBook(int bookPos);
+	boolean checkUser(User user);
+	boolean checkBook(BookCopy book);
 }

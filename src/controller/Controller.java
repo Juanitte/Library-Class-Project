@@ -5,6 +5,7 @@ import interfaces.iGUI;
 import interfaces.iRepo;
 import model.RepoLibrary;
 import model.DTO.BookCopy;
+import model.DTO.Item;
 import model.DTO.Magazine;
 import model.DTO.User;
 import util.Utils;
@@ -214,7 +215,7 @@ public class Controller implements iController{
 			Utils.showMessage("");
 			Magazine magazine = new Magazine(title, edition);
 			if(!library.itemIsDuplicate(magazine)) {
-				library.itemAdd(magazine);
+				library.getItems().add(magazine);
 				Utils.showMessage("Magazine added succesfully");
 				Utils.showMessage("");
 			}else {
@@ -374,7 +375,7 @@ public class Controller implements iController{
 			Utils.showMessage("");
 			BookCopy book = new BookCopy(title, releaseYear, isbn, bookshelvesNum);
 			if(!library.itemIsDuplicate(book)) {
-				library.itemAdd(book);
+				library.getItems().add(book);
 				Utils.showMessage("Book added succesfully");
 				Utils.showMessage("");
 			}else {
@@ -405,35 +406,48 @@ public class Controller implements iController{
 
 	@Override
 	public void showItemMenuControl(int option) {
-		int pos = -1;
 		
 		switch(option) {
 		case 1:
+
+			Item item = new Item();
 			do {
 				int code = Utils.intInput("Search Code: ");
-				pos = library.itemSearchByCode(code);
 				
-				if(pos == -1) {
+				if(item == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
+				}else {
+					item = library.itemSearchByCode(code);
 				}
-			}while(pos == -1);
-			library.itemShow(pos);
+			}while(item == null);
+			if(!item.isBook(item)) {
+				Utils.showMessage(((Magazine)item).toString());
+			}else {
+				Utils.showMessage(((BookCopy)item).toString());				
+			}
 			break;
 			
 		case 2:
+
+			item = new Item();
 			do {
 				String title = Utils.stringInput("Search Title: ");
-				pos = library.itemSearchByTitle(title);
 				
-				if(pos == -1) {
+				if(item == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
+				}else {
+					item = library.itemSearchByTitle(title);
 				}
-			}while(pos == -1);
-			library.itemShow(pos);
+			}while(item == null);
+			if(!item.isBook(item)) {
+				Utils.showMessage(((Magazine)item).toString());
+			}else {
+				Utils.showMessage(((BookCopy)item).toString());				
+			}
 			break;
 			
 		case 0:
@@ -459,44 +473,46 @@ public class Controller implements iController{
 
 	@Override
 	public void modifyItemMenuControl(int option) {
-		int pos = -1;
 		boolean isBook = false;
 		
 		switch(option) {
 		case 1:
+			
+			Item item = new Item();
 			do {
 				int code = Utils.intInput("Search Code: ");
-				pos = library.itemSearchByCode(code);
+				item = library.itemSearchByCode(code);
 				
-				if(pos == -1) {
+				if(item == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
 				}
-			}while(pos == -1);
-			isBook = library.isBook(pos);
+			}while(item == null);
+			isBook = item.isBook(item);
 			Utils.showMessage("");
-			Utils.showMessage(library.getItems()[pos].toString());
+			Utils.showMessage(item.toString());
 			Utils.showMessage("");
-			modifyItemMenuRun2(pos, isBook);
+			modifyItemMenuRun2(item, isBook);
 			break;
 			
 		case 2:
+			
 			do {
 				String title = Utils.stringInput("Search Title: ");
-				pos = library.itemSearchByTitle(title);
+				item = library.itemSearchByTitle(title);
 				
-				if(pos == -1) {
+				if(item == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
 				}
-			}while(pos == -1);
-			isBook = library.isBook(pos);
+			}while(item == null);
+			isBook = item.isBook(item);
 			Utils.showMessage("");
-			Utils.showMessage(library.getItems()[pos].toString());
+			Utils.showMessage(item.toString());
 			Utils.showMessage("");
-			modifyItemMenuRun2(pos, isBook);
+			modifyItemMenuRun2(item, isBook);
 			break;
 			
 		case 0:
@@ -510,25 +526,27 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void modifyItemMenuRun2(int pos, boolean isBook) {
+	public void modifyItemMenuRun2(Item item, boolean isBook) {
 		int option = -1;
 		do {
 			myGUI.modifyItemMenuShow2();
 			option = Utils.intInput("Choose an option: ");
-			modifyItemMenuControl2(option, pos, isBook);
+			modifyItemMenuControl2(option, item, isBook);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void modifyItemMenuControl2(int option, int pos, boolean isBook) {
+	public void modifyItemMenuControl2(int option, Item item, boolean isBook) {
+		
+		int pos = library.getItemPos(item);
 		
 		switch(option) {
 		case 1:
 			if(isBook) {
-				library.bookModify((BookCopy) library.getItems()[pos], pos);
+				library.bookModify((BookCopy) item, pos);
 			}else {
-				library.magazineModify((Magazine) library.getItems()[pos], pos);
+				library.magazineModify((Magazine) item, pos);
 			}
 			break;
 			
@@ -555,41 +573,43 @@ public class Controller implements iController{
 
 	@Override
 	public void deleteItemMenuControl(int option) {
-		int pos = -1;
 		
 		switch(option) {
 		case 1:
+			
+			Item item = null;
 			do {
 				int code = Utils.intInput("Search Code: ");
-				pos = library.itemSearchByCode(code);
+				item = library.itemSearchByCode(code);
 				
-				if(pos == -1) {
+				if(item == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
 				}
-			}while(pos == -1);
+			}while(item == null);
 			Utils.showMessage("");
-			Utils.showMessage(library.getItems()[pos].toString());
+			Utils.showMessage(item.toString());
 			Utils.showMessage("");
-			deleteItemMenuRun2(pos);
+			deleteItemMenuRun2(item);
 			break;
 			
 		case 2:
+						
 			do {
 				String title = Utils.stringInput("Search Title: ");
-				pos = library.itemSearchByTitle(title);
+				item = library.itemSearchByTitle(title);
 				
-				if(pos == -1) {
+				if(item == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
 				}
-			}while(pos == -1);
+			}while(item == null);
 			Utils.showMessage("");
-			Utils.showMessage(library.getItems()[pos].toString());
+			Utils.showMessage(item.toString());
 			Utils.showMessage("");
-			deleteItemMenuRun2(pos);
+			deleteItemMenuRun2(item);
 			break;
 			
 		case 0:
@@ -603,21 +623,21 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void deleteItemMenuRun2(int pos) {
+	public void deleteItemMenuRun2(Item item) {
 		int option = -1;
 		do {
 			myGUI.deleteItemMenuShow2();
 			option = Utils.intInput("Choose an option: ");
-			deleteItemMenuControl2(option, pos);
+			deleteItemMenuControl2(option, item);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void deleteItemMenuControl2(int option, int pos) {
+	public void deleteItemMenuControl2(int option, Item item) {
 		switch(option) {
 			case 1:
-				library.itemDelete(pos);
+				library.getItems().remove(item);
 				Utils.showMessage("");
 				Utils.showMessage("Item deleted succesfully");
 				Utils.showMessage("");
@@ -810,7 +830,7 @@ public class Controller implements iController{
 			Utils.showMessage("");
 			User user = new User(dni, name, surname, phoneNum, email);
 			if(!library.userIsDuplicate(user)) {
-				library.userAdd(user);
+				library.getUsers().add(user);
 				Utils.showMessage("User added succesfully");
 				Utils.showMessage("");
 			}else {
@@ -841,21 +861,22 @@ public class Controller implements iController{
 
 	@Override
 	public void showUserMenuControl(int option) {
-		int pos = -1;
 		
 		switch(option) {
 		case 1:
+			
+			User user = null;
 			do {
 				String dni = Utils.stringInput("Search DNI: ");
-				pos = library.userSearch(dni);
+				user = library.userSearch(dni);
 				
-				if(pos == -1) {
+				if(user == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
 				}
-			}while(pos == -1);
-			library.userShow(pos);
+			}while(user == null);
+			Utils.showMessage(user.toString());
 			break;
 			
 		case 0:
@@ -881,24 +902,25 @@ public class Controller implements iController{
 
 	@Override
 	public void modifyUserMenuControl(int option) {
-		int pos = -1;
 		
 		switch(option) {
 		case 1:
+			
+			User user = null;
 			do {
-				String dni = Utils.stringInput("Search dni: ");
-				pos = library.userSearch(dni);
+				String dni = Utils.stringInput("Search DNI: ");
+				user = library.userSearch(dni);
 				
-				if(pos == -1) {
+				if(user == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
 				}
-			}while(pos == -1);
+			}while(user == null);
 			Utils.showMessage("");
-			Utils.showMessage(library.getUsers()[pos].toString());
+			Utils.showMessage(user.toString());
 			Utils.showMessage("");
-			modifyUserMenuRun2(pos);
+			modifyUserMenuRun2(user);
 			break;
 			
 		case 0:
@@ -912,21 +934,23 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void modifyUserMenuRun2(int pos) {
+	public void modifyUserMenuRun2(User user) {
 		int option = -1;
 		do {
 			myGUI.modifyUserMenuShow2();
 			option = Utils.intInput("Choose an option: ");
-			modifyUserMenuControl2(option, pos);
+			modifyUserMenuControl2(option, user);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void modifyUserMenuControl2(int option, int pos) {
+	public void modifyUserMenuControl2(int option, User user) {
 		switch(option) {
 		case 1:
-			library.userModify(pos, library.getUsers()[pos]);			
+			int pos = library.getUserPos(user);
+			
+			library.userModify(user, pos);
 			break;
 			
 		case 0:
@@ -952,24 +976,25 @@ public class Controller implements iController{
 
 	@Override
 	public void deleteUserMenuControl(int option) {
-		int pos = -1;
 		
 		switch(option) {
 		case 1:
+			
+			User user = null;
 			do {
 				String dni = Utils.stringInput("Search DNI: ");
-				pos = library.userSearch(dni);
+				user = library.userSearch(dni);
 				
-				if(pos == -1) {
+				if(user == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");
 				}
-			}while(pos == -1);
+			}while(user == null);
 			Utils.showMessage("");
-			Utils.showMessage(library.getUsers()[pos].toString());
+			Utils.showMessage(user.toString());
 			Utils.showMessage("");
-			deleteUserMenuRun2(pos);
+			deleteUserMenuRun2(user);
 			break;
 			
 		case 0:
@@ -983,21 +1008,21 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void deleteUserMenuRun2(int pos) {
+	public void deleteUserMenuRun2(User user) {
 		int option = -1;
 		do {
 			myGUI.deleteUserMenuShow2();
 			option = Utils.intInput("Choose an option: ");
-			deleteUserMenuControl2(option, pos);
+			deleteUserMenuControl2(option, user);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void deleteUserMenuControl2(int option, int pos) {
+	public void deleteUserMenuControl2(int option, User user) {
 		switch(option) {
 		case 1:
-			library.userDelete(pos);
+			library.getUsers().remove(user);
 			Utils.showMessage("");
 			Utils.showMessage("User deleted succesfully");
 			Utils.showMessage("");
@@ -1026,24 +1051,25 @@ public class Controller implements iController{
 
 	@Override
 	public void lendBookMenuControl(int option) {
-		int pos = -1;
 		
 		switch(option) {
 		case 1:
+			
+			User user = null;
 			do {
 				String dni = Utils.stringInput("Search DNI: ");
-				pos = library.userSearch(dni);
+				user = library.userSearch(dni);
 				
-				if(pos == -1) {
+				if(user == null) {
 					Utils.showMessage("");
 					Utils.showMessage("Not Found");
 					Utils.showMessage("");					
 				}
-			}while(pos == -1);
+			}while(user == null);
 			Utils.showMessage("");
-			Utils.showMessage(library.getUsers()[pos].toString());
+			Utils.showMessage(user.toString());
 			Utils.showMessage("");
-			lendBookMenuRun2(pos);
+			lendBookMenuRun2(user);
 			break;
 			
 		case 0:
@@ -1057,24 +1083,24 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void lendBookMenuRun2(int userPos) {
+	public void lendBookMenuRun2(User user) {
 		int option = -1;
 		do {
 			myGUI.lendBookMenuShow2();
 			option = Utils.intInput("Choose an option: ");
-			lendBookMenuControl2(option, userPos);
+			lendBookMenuControl2(option, user);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void lendBookMenuControl2(int option, int userPos) {
+	public void lendBookMenuControl2(int option, User user) {
 		switch(option) {
 		case 1:
 			Utils.showMessage("");
 			Utils.showMessage("User Selected");
 			Utils.showMessage("");
-			lendBookMenuRun3(userPos);
+			lendBookMenuRun3(user);
 			break;
 			
 		case 0:
@@ -1088,44 +1114,45 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void lendBookMenuRun3(int userPos) {
+	public void lendBookMenuRun3(User user) {
 		int option = -1;
 		do {
 			myGUI.lendBookMenuShow3();
 			option = Utils.intInput("Choose an option: ");
-			lendBookMenuControl3(option, userPos);
+			lendBookMenuControl3(option, user);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void lendBookMenuControl3(int option, int userPos) {
-		int pos = -1;
+	public void lendBookMenuControl3(int option, User user) {
 		
 		switch(option) {
 		case 1:
+			
+			BookCopy book = null;
 			do {
 				do {
 					int code = Utils.intInput("Search Code: ");
-					pos = library.itemSearchByCode(code);
+					book = ((BookCopy)library.itemSearchByCode(code));
 					
-					if(pos == -1) {
+					if(book == null) {
 						Utils.showMessage("");
 						Utils.showMessage("Not Found");
 						Utils.showMessage("");
 					}
-				}while(pos == -1);
-					if(library.isBook(pos)) {
+				}while(book == null);
+					if(book.isBook(book)) {
 						Utils.showMessage("");
-						Utils.showMessage(library.getItems()[pos].toString());
+						Utils.showMessage(book.toString());
 						Utils.showMessage("");
 					}else {
 						Utils.showMessage("");
 						Utils.showMessage("This is Not a Book");
 						Utils.showMessage("");
 					}
-			}while(!library.isBook(pos));
-				lendBookMenuRun4(userPos, pos);
+			}while(!book.isBook(book));
+				lendBookMenuRun4(user, book);
 			break;
 			
 		case 0:
@@ -1139,24 +1166,24 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void lendBookMenuRun4(int userPos, int bookPos) {
+	public void lendBookMenuRun4(User user, BookCopy book) {
 		int option = -1;
 		do {
 			myGUI.lendBookMenuShow4();
 			option = Utils.intInput("Choose an option: ");
-			lendBookMenuControl4(option, userPos, bookPos);
+			lendBookMenuControl4(option, user, book);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void lendBookMenuControl4(int option, int userPos, int bookPos) {
+	public void lendBookMenuControl4(int option, User user, BookCopy book) {
 		switch(option) {
 		case 1:
 			Utils.showMessage("");
 			Utils.showMessage("Book Selected");
 			Utils.showMessage("");
-			lendBookMenuRun5(userPos, bookPos);
+			lendBookMenuRun5(user, book);
 			break;
 			
 		case 0:
@@ -1170,30 +1197,30 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void lendBookMenuRun5(int userPos, int bookPos) {
+	public void lendBookMenuRun5(User user, BookCopy book) {
 		int option = -1;
 		do {
 			myGUI.lendBookMenuShow5();
 			option = Utils.intInput("Choose an option: ");
-			lendBookMenuControl5(option, userPos, bookPos);
+			lendBookMenuControl5(option, user, book);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void lendBookMenuControl5(int option, int userPos, int bookPos) {
+	public void lendBookMenuControl5(int option, User user, BookCopy book) {
 		switch(option) {
 		case 1:
-			if(!library.checkUser(userPos) && !library.checkBook(bookPos)) {
-				library.lendBook(userPos, bookPos);
+			if(!library.checkUser(user) && !library.checkBook(book)) {
+				library.lendBook(user, book);
 				Utils.showMessage("");
 				Utils.showMessage("Book Lent");
 				Utils.showMessage("");
-			}else if(library.checkUser(userPos) && !library.checkBook(bookPos)) {
+			}else if(library.checkUser(user) && !library.checkBook(book)) {
 				Utils.showMessage("");
 				Utils.showMessage("Book is already lent");
 				Utils.showMessage("");
-			}else if(!library.checkUser(userPos) && library.checkBook(bookPos)) {
+			}else if(!library.checkUser(user) && library.checkBook(book)) {
 				Utils.showMessage("");
 				Utils.showMessage("User has a lent book already");
 				Utils.showMessage("");
@@ -1228,29 +1255,26 @@ public class Controller implements iController{
 
 	@Override
 	public void retrieveBookMenuControl(int option) {
-		int pos = -1;
 		
 		switch(option) {
 		case 1:
+			
+			User user = null;
 			do {
 				String dni = Utils.stringInput("Search DNI: ");
-				pos = library.userSearch(dni);
+				user = library.userSearch(dni);
 				
-				if(pos != -1 && library.getUsers()[pos].getLentBook() == null) {
+				if(user != null && user.getLentBook() == null) {
 					Utils.showMessage("");
 					Utils.showMessage("User does not have any book");
 					Utils.showMessage("");
 				}
-			}while(pos == -1 || library.getUsers()[pos].getLentBook() == null);
-			if(pos != -1) {
+			}while(user == null || user.getLentBook() == null);
+			if(user != null) {
 				Utils.showMessage("");
-				Utils.showMessage(library.getUsers()[pos].toString());
+				Utils.showMessage(user.toString());
 				Utils.showMessage("");
-				retrieveBookMenuRun2(pos);
-			}else {
-				Utils.showMessage("");
-				Utils.showMessage("Not Found");
-				Utils.showMessage("");				
+				retrieveBookMenuRun2(user);
 			}
 			break;
 			
@@ -1265,25 +1289,25 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void retrieveBookMenuRun2(int userPos) {
+	public void retrieveBookMenuRun2(User user) {
 		int option = -1;
 		do {
 			myGUI.retrieveBookMenuShow2();
 			option = Utils.intInput("Choose an option: ");
-			retrieveBookMenuControl2(option, userPos);
+			retrieveBookMenuControl2(option, user);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void retrieveBookMenuControl2(int option, int userPos) {
+	public void retrieveBookMenuControl2(int option, User user) {
 		switch(option) {
 		case 1:
 			
 				Utils.showMessage("");
 				Utils.showMessage("User Selected");
 				Utils.showMessage("");
-				retrieveBookMenuRun3(userPos);
+				retrieveBookMenuRun3(user);
 			break;
 			
 		case 0:
@@ -1297,21 +1321,21 @@ public class Controller implements iController{
 	}
 
 	@Override
-	public void retrieveBookMenuRun3(int userPos) {
+	public void retrieveBookMenuRun3(User user) {
 		int option = -1;
 		do {
 			myGUI.retrieveBookMenuShow3();
 			option = Utils.intInput("Choose an option: ");
-			retrieveBookMenuControl3(option, userPos);
+			retrieveBookMenuControl3(option, user);
 		}while(option < 0 || option > 1);
 		
 	}
 
 	@Override
-	public void retrieveBookMenuControl3(int option, int userPos) {
+	public void retrieveBookMenuControl3(int option, User user) {
 		switch(option) {
 		case 1:
-			library.retrieveBook(userPos, library.itemSearchByCode(library.getUsers()[userPos].getLentBook().getCode()));
+			library.retrieveBook(user, user.getLentBook());
 
 			Utils.showMessage("");
 			Utils.showMessage("Operation succesfully finished");

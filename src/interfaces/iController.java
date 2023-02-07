@@ -1,5 +1,8 @@
 package interfaces;
 
+import model.DTO.BookCopy;
+import model.DTO.Item;
+import model.DTO.User;
 
 public interface iController {
 	void start();
@@ -33,13 +36,13 @@ public interface iController {
 	
 	void modifyItemMenuRun();
 	void modifyItemMenuControl(int option);
-	void modifyItemMenuRun2(int pos, boolean isBook);
-	void modifyItemMenuControl2(int option, int pos, boolean isBook);
+	void modifyItemMenuRun2(Item item, boolean isBook);
+	void modifyItemMenuControl2(int option, Item item, boolean isBook);
 	
 	void deleteItemMenuRun();
 	void deleteItemMenuControl(int option);
-	void deleteItemMenuRun2(int pos);
-	void deleteItemMenuControl2(int option, int pos);
+	void deleteItemMenuRun2(Item item);
+	void deleteItemMenuControl2(int option, Item item);
 	
 	void addUserMenuRun();
 	void addUserMenuControl(int option);
@@ -59,29 +62,29 @@ public interface iController {
 	
 	void modifyUserMenuRun();
 	void modifyUserMenuControl(int option);
-	void modifyUserMenuRun2(int pos);
-	void modifyUserMenuControl2(int option, int pos);
+	void modifyUserMenuRun2(User user);
+	void modifyUserMenuControl2(int option, User user);
 	
 	void deleteUserMenuRun();
 	void deleteUserMenuControl(int option);
-	void deleteUserMenuRun2(int pos);
-	void deleteUserMenuControl2(int option, int pos);
+	void deleteUserMenuRun2(User user);
+	void deleteUserMenuControl2(int option, User user);
 	
 	void lendBookMenuRun();
 	void lendBookMenuControl(int option);
-	void lendBookMenuRun2(int userPos);
-	void lendBookMenuControl2(int option, int userPos);
-	void lendBookMenuRun3(int userPos);
-	void lendBookMenuControl3(int option, int userPos);
-	void lendBookMenuRun4(int userPos, int bookPos);
-	void lendBookMenuControl4(int option, int userPos, int bookPos);
-	void lendBookMenuRun5(int userPos, int bookPos);
-	void lendBookMenuControl5(int option, int userPos, int bookPos);
+	void lendBookMenuRun2(User user);
+	void lendBookMenuControl2(int option, User user);
+	void lendBookMenuRun3(User user);
+	void lendBookMenuControl3(int option, User user);
+	void lendBookMenuRun4(User user, BookCopy book);
+	void lendBookMenuControl4(int option, User user, BookCopy book);
+	void lendBookMenuRun5(User user, BookCopy book);
+	void lendBookMenuControl5(int option, User user, BookCopy book);
 	
 	void retrieveBookMenuRun();
 	void retrieveBookMenuControl(int option);
-	void retrieveBookMenuRun2(int userPos);
-	void retrieveBookMenuControl2(int option, int userPos);
-	void retrieveBookMenuRun3(int userPos);
-	void retrieveBookMenuControl3(int option, int userPos);
+	void retrieveBookMenuRun2(User user);
+	void retrieveBookMenuControl2(int option, User user);
+	void retrieveBookMenuRun3(User user);
+	void retrieveBookMenuControl3(int option, User user);
 }

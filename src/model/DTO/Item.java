@@ -35,4 +35,24 @@ public class Item implements Serializable {
 	public String toString() {
 		return "CODE: " + code + "\n\tTitle: " + title;
 	}
+	
+	
+	
+	/**
+	 * Method that checks if an Item is a book or not.
+	 * @param item , the item to check.
+	 * @return a boolean true if it's a book or false if it's not.
+	 */
+	
+	public boolean isBook(Item item) {
+		boolean isBook = false;
+		
+		if(item.getClass().getTypeName().contains("BookCopy")) {
+			isBook = true;
+		}
+		
+		return isBook;
+		
+	}
+	
 }
