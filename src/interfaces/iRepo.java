@@ -41,7 +41,7 @@ public interface iRepo{
 	
 	void lendBook(User user, BookCopy book);
 	
-	boolean retrieveBook(User user, BookCopy book);
+	void retrieveBook(User user, BookCopy book);
 	
 	boolean checkUser(User user);
 	boolean checkBook(BookCopy book);

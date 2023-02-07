@@ -375,9 +375,10 @@ public class Controller implements iController{
 			Utils.showMessage("");
 			BookCopy book = new BookCopy(title, releaseYear, isbn, bookshelvesNum);
 			if(!library.itemIsDuplicate(book)) {
-				library.getItems().add(book);
-				Utils.showMessage("Book added succesfully");
-				Utils.showMessage("");
+				if(library.getItems().add(book)) {					
+					Utils.showMessage("Book added succesfully");
+					Utils.showMessage("");
+				}
 			}else {
 				Utils.showMessage("This book is already listed");
 			}

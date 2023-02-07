@@ -362,13 +362,11 @@ public class RepoLibrary implements iRepo, Serializable{
 	 */
 
 	@Override
-	public boolean retrieveBook(User user, BookCopy book) {
+	public void retrieveBook(User user, BookCopy book) {
 		user.setLentBook(null);
 		book.setHolder(null);
 		book.setTaken(false);
 		book.setTakenDate(null);
-		
-		return true;
 	}
 	
 	/**
@@ -387,6 +385,12 @@ public class RepoLibrary implements iRepo, Serializable{
 		
 		return isLent;
 	}
+	
+	/**
+	 * Method that checks if book is lent already.
+	 * @param user , the user to be checked.
+	 * @return a boolean checking if the user has a lent book or not.
+	 */
 
 	@Override
 	public boolean checkBook(BookCopy book) {
