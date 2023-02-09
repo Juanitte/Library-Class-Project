@@ -11,9 +11,8 @@ import model.RepoLibrary;
 public class LocalStorage {
 
 	/**
-	 * Método que serializa un dato en un archivo.
-	 * @param file , nombre del archivo.
-	 * @param items , el dato a serializar.
+	 * Method that serializes an iRepo in a file.
+	 * @param library , the iRepo to save.
 	 * @return un boolean true si ha salido bien y false si no.
 	 */
 	
@@ -36,8 +35,8 @@ public class LocalStorage {
 	}
 	
 	/**
-	 * Método que lee un dato en un archivo.
-	 * @return el dato leido.
+	 * Method that deserializes an iRepo from a file.
+	 * @return the deserialized iRepo.
 	 */
 	
 	public static iRepo read() {
