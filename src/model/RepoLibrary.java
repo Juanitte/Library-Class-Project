@@ -1,6 +1,9 @@
 package model;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import interfaces.iRepo;
 import model.DTO.BookCopy;
@@ -11,8 +14,8 @@ import util.Utils;
 
 public class RepoLibrary implements iRepo, Serializable{
 	
-	private ArrayList<Item> items;
-	private ArrayList<User> users;
+	private List<Item> items;
+	private List<User> users;
 	
 	
 	public RepoLibrary() {
@@ -27,7 +30,7 @@ public class RepoLibrary implements iRepo, Serializable{
 	}		
 
 	public ArrayList<Item> getItems() {
-		return items;
+		return (ArrayList<Item>) items;
 	}
 
 	public void setItems(ArrayList<Item> items) {
@@ -35,7 +38,7 @@ public class RepoLibrary implements iRepo, Serializable{
 	}
 
 	public ArrayList<User> getUsers() {
-		return users;
+		return (ArrayList<User>) users;
 	}
 
 	public void setUsers(ArrayList<User> users) {
@@ -349,10 +352,13 @@ public class RepoLibrary implements iRepo, Serializable{
 
 	@Override
 	public void lendBook(User user, BookCopy book) {
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter f = DateTimeFormatter.ofPattern("dd'/'MM'/'uuuu");
+		
 		user.setLentBook(book);
 		
 		book.setTaken(true);
-		book.setTakenDate(Utils.stringInput("Current date: "));
+		book.setTakenDate(now.format(f));
 		book.setHolder(user);
 	}
 	
