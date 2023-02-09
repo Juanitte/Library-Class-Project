@@ -21,6 +21,9 @@ public class Controller implements iController{
 	public void start() {
 		if(LocalStorage.read() != null) {
 			library = LocalStorage.read();
+			if(LocalStorage.read2() != null) {
+				Item.autoCode = LocalStorage.read2();
+			}
 		}
 		
 		mainMenuRun();		
@@ -43,6 +46,7 @@ public class Controller implements iController{
 			case 1:
 				addItemMenuRun();
 				LocalStorage.write((RepoLibrary)library);
+				LocalStorage.write2(((Integer) Item.autoCode));
 				break;
 				
 			case 2:

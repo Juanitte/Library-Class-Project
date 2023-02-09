@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Item implements Serializable {
 
-	protected static int autoCode = 0;
+	public static int autoCode = 0;
 	protected int code;
 	protected String title;
 	
